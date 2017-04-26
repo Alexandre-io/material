@@ -747,6 +747,41 @@ describe('<md-virtual-repeat>', function() {
     });
   });
 
+  it('should calculate the correct size for long items', function() {
+    container.attr('md-auto-shrink', '')
+    var child = container.children().eq(0)
+    child.css('height', null);
+    child.attr('md-item-size', null);
+
+    createRepeater();
+    scope.items = ['Lorem ipsum'];
+    scope.$apply();
+    $$rAF.flush();
+
+    var shortHeight = sizer[0].offsetHeight;
+
+    container.remove();
+    component && component.remove();
+    scope.$destroy();
+
+    container = angular.element(CONTAINER_HTML).append(repeater);
+
+    container.attr('md-auto-shrink', '');
+    var child = container.children().eq(0);
+    child.css('height', null);
+    child.attr('md-item-size', null);
+
+    scope = $rootScope.$new();
+    repeater[0].style.height = null
+    createRepeater();
+    scope.items = ['Lorem ipsum dolor sit amet'];
+    scope.$apply();
+    $$rAF.flush();
+
+    expect(sizer[0].offsetHeight > shortHeight).toBeTruthy();
+    repeater[0].style.height = '10px'
+  });
+
   /**
    * Facade to access transform properly even when jQuery is used;
    * since jQuery's css function is obtaining the computed style (not wanted)
